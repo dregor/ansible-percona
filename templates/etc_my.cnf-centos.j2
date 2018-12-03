@@ -6,21 +6,13 @@ socket      = /var/lib/mysql/mysql.sock
 
 
 [mysqld]
-#
-# Remove leading # and set to the amount of RAM for the most important data
-# cache in MySQL. Start at 70% of total RAM for dedicated server, else 10%.
-# innodb_buffer_pool_size = 128M
-#
-# Remove leading # to turn on a very important data integrity option: logging
-# changes to the binary log between backups.
-# log_bin
-#
-# Remove leading # to set options mainly useful for reporting servers.
-# The server defaults are faster for transactions and fast SELECTs.
-# Adjust sizes as needed, experiment to find the optimal values.
-# join_buffer_size = 128M
-# sort_buffer_size = 2M
-# read_rnd_buffer_size = 2M
+{% if mysql_skip_name_resolve: %}
+skip-name-resolve
+{% endif %}
+{% if mysql_skip_external_locking: %}
+skip-external-locking
+{% endif %}
+
 user        = mysql
 socket      = /var/lib/mysql/mysql.sock
 pid-file    = /var/run/mysqld/mysqld.pid
@@ -29,10 +21,8 @@ basedir     = /usr
 datadir     = {{ mysql_datadir }}
 tmpdir      = /tmp
 
-# language is for pre-5.5. In 5.5 it is an alias for lc_messages_dir.
 language = {{ mysql_language }}
 bind-address = {{ mysql_bind_address }}
-skip-external-locking
 
 # * Fine Tuning
 key_buffer_size         = {{ mysql_key_buffer }}
@@ -45,29 +35,26 @@ table_open_cache        = {{ mysql_table_cache }}
 thread_concurrency      = {{ mysql_thread_concurrency }}
 
 # ** Query Cache Configuration
+query_cache_type		= {{ mysql_query_cache_type }}
 query_cache_limit       = {{ mysql_query_cache_limit }}
 query_cache_size        = {{ mysql_query_cache_size }}
+
 # ** Logging and Replication
 log_error = /var/log/mysqld.log
 log_warnings = 2
 #general_log_file        = /var/log/mysql/mysqld.log
 #general_log             = 1
-#
+
+# ** Slow queries
 #log_slow_queries   = /var/log/mysql/mysql-slow.log
 #long_query_time = 2
 #log-queries-not-using-indexes
-#
+
 # The following can be used as easy to replay backup logs or for replication.
-#server-id      = 1
-#log_bin            = /var/log/mysql/mysql-bin.log
 expire_logs_days    = 10
-max_binlog_size     = 100M
-#binlog_do_db       = include_database_name
-#binlog_ignore_db   = include_database_name
+max_binlog_size     = 1G
 
 # ** InnoDB
-# InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
-# Read the manual for more InnoDB related options. There are many!
 innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}
 innodb_buffer_pool_size = {{ mysql_innodb_buffer_pool_size }}
 {% if mysql_innodb_flush_method != 'fdatasync': %}
@@ -77,14 +64,25 @@ innodb_lock_wait_timeout = {{ mysql_innodb_lock_wait_timeout }}
 innodb_log_buffer_size = {{ mysql_innodb_log_buffer_size }}
 innodb_log_file_size = {{ mysql_innodb_log_file_size }}
 innodb_file_per_table = {{ mysql_innodb_file_per_table }}
+{% if mysql_innodp_buffer_pool_dump: %}
+innodb_buffer_pool_dump_at_shutdown	= 1
+innodb_buffer_pool_load_at_startup	= 1
+{% endif %}
+innodb_buffer_pool_instances	= {{ mysql_innodb_buffer_pool_instances }}
+innodb_page_cleaners			= {{ mysql_innodb_buffer_pool_instances }}
 
-# ** Security Features
-# Read the manual, too, if you want chroot!
-# chroot = /var/lib/mysql/
-
+# ** Character set
 character_set_server = {{ mysql_character_set_server }}
 collation_server = {{ mysql_collation_server }}
 character-set-client-handshake = {{ mysql_character_set_client_handshake }}
+
+# ** Replicate do
+{% for db in replicate_do: -%}
+replicate-do-db={{ db.name }}
+  {% for table in db.tables: -%}
+replicate-do-table={{ db.name }}.{{ table }}
+  {%- endfor -%}
+{%- endfor %}
 
 [mysqldump]
 quick

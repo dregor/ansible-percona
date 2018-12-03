@@ -2,7 +2,11 @@
 
 # Version to install, defaulting to 5.6
 mysql_version_major: "5"
-mysql_version_minor: "6"
+mysql_version_minor: "7"
+mysql_yum_repository: 'http://www.percona.com/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm'
+
+mysql_skip_name_resolve: false
+mysql_skip_external_locking: true
 
 # Basic settings
 mysql_root_password: "pass"
@@ -20,8 +24,9 @@ mysql_myisam_recover: "BACKUP"
 mysql_max_connections: "500"
 mysql_table_cache: "64"
 mysql_thread_concurrency: "10"
-mysql_query_cache_limit: "1M"
-mysql_query_cache_size: "16M"
+mysql_query_cache_type: "0"
+mysql_query_cache_limit: "0"
+mysql_query_cache_size: "0"
 mysql_character_set_server: "utf8"
 mysql_collation_server: "utf8_general_ci"
 mysql_mysqldump_max_allowed_packet: "128M"
@@ -35,8 +40,11 @@ mysql_innodb_flush_log_at_trx_commit: "1"
 mysql_innodb_lock_wait_timeout: "50"
 mysql_innodb_log_buffer_size: "1M"
 mysql_innodb_log_file_size: "5M"
+mysql_innodp_buffer_pool_dump: true
+mysql_innodb_buffer_pool_instances: "2"
 
 mysql_character_set_client_handshake: "FALSE"
 
+replicate_do: []
 mysql_databases: []
 mysql_users: []
