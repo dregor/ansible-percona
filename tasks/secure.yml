@@ -12,7 +12,7 @@
     - name: "Parse temporary password from mysql log"
       shell: "cat /var/log/mysqld.log | sed -n 's/.*temporary password is generated for root@localhost: //p'"
       register: temppass
-
+    - debug: msg='{{temppass}}'
     # Set root password 
     # (mysql_user module can't be used here, got error 1862 'Your password has expired. To log in you must change it using a client that supports expired passwords.')
     # escape single quotes in shell with '' not \'
@@ -32,12 +32,16 @@
     - ansible_os_family == "RedHat"
     - root_my_cnf_stat.stat.exists == False
 
+- name: disable passwords check
+  shell: 'mysql -e "SET GLOBAL validate_password_policy=LOW; uninstall plugin validate_password;" -h 127.1'
+
 - name: "Set the root password"
   mysql_user:
     name: root
     host: "{{ item }}"
     password: "{{ mysql_root_password }}"
     check_implicit_admin: yes
+    priv: '*.*:ALL,GRANT'
     state: present
   with_items:
     - "127.0.0.1"
