@@ -12,6 +12,7 @@ skip-name-resolve
 skip-external-locking
 {% endif %}
 server-id	= {{ mysql_server_id }}
+sql-mode=""
 
 user        = mysql
 socket      = {{ mysql_socket }}
@@ -92,7 +93,7 @@ wsrep_cluster_name		= "{{ mysql_cluster_name }}"
 wsrep_cluster_address	= "gcomm://{{ mysql_cluster_address }}"
 wsrep_sst_auth			= {{ mysql_sst_user }}:{{ mysql_sst_password }}
 wsrep_sst_method		= xtrabackup-v2
-wsrep_provider_options	= "gcache.size = {{ mysql_gcache_size }}";gcache.recover = yes;gcs.fc_master_slave = YES;gcs.fc_limit={{ mysql_gcs_fc_limit }}"
+wsrep_provider_options	= "gcache.size = {{ mysql_gcache_size }};gcache.recover = yes;gcs.fc_master_slave = YES;gcs.fc_limit={{ mysql_gcs_fc_limit }}"
 wsrep_slave_threads		= {{ mysql_wsrep_slave_threads }}
 wsrep_node_address		= "{{ ansible_default_ipv4.address }}"
 wsrep_node_name			= "{{ ansible_hostname }}"

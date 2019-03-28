@@ -46,4 +46,3 @@
     name: "mysql"
     state: "started"
     enabled: "yes"
-  when: not mysql_cluster
