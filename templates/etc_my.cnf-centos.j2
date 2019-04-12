@@ -45,6 +45,7 @@ log_error 			= {{ mysql_log_error }}
 #general_log_file   = /var/log/mysql/mysqld.log
 #general_log        = 1
 binlog_format		= {{ mysql_binlog_format }}
+log_error_verbosity = 1
 
 # ** Slow queries
 # log_slow_queries   = /var/log/mysql/mysql-slow.log
@@ -76,13 +77,19 @@ character_set_server = {{ mysql_character_set_server }}
 collation_server = {{ mysql_collation_server }}
 character-set-client-handshake = {{ mysql_character_set_client_handshake }}
 
+validate_password_policy=LOW
+validate_password_special_char_count=0
+validate_password_length=0
+validate_password_mixed_case_count=0
+validate_password_number_count=0
+
 # ** Replicate do
 {% for db in replicate_do: -%}
 replicate-do-db={{ db.name }}
-  {% for table in db.tables: -%}
+	{% for table in db.tables: -%}
 replicate-do-table={{ db.name }}.{{ table }}
-  {%- endfor -%}
-{%- endfor %}
+	{% endfor -%}
+{%- endfor -%}
 
 
 # ** WSREP options
