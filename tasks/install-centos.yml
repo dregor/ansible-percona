@@ -31,7 +31,6 @@
     - "percona-toolkit"
     - "percona-xtrabackup-24"
     - "MySQL-python"
-    - "pv"
 
 - name: "Adjust permissions of datadir"
   file:

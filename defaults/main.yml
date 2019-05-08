@@ -14,12 +14,13 @@ mysql_socket: "/var/lib/mysql/mysql.sock"
 mysql_server_id: 1
 
 # Logs
-mysql_log_warnings: 2
+mysql_log_error_verbosity: 1
 mysql_log_error: "/var/log/mysqld.log"
 mysql_expire_logs_days: 3
 mysql_max_binlog_size: "1G"
 mysql_max_binlog_files: 12
 mysql_binlog_format: "ROW"
+mysql_skip_log_bin: false
 
 # Fine tuning
 mysql_innodb_flush_method: "O_DIRECT"

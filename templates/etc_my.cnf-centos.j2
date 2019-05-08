@@ -40,12 +40,10 @@ query_cache_limit       = {{ mysql_query_cache_limit }}
 query_cache_size        = {{ mysql_query_cache_size }}
 
 # ** Logging and Replication
-log_warnings		= {{ mysql_log_warnings }}
 log_error 			= {{ mysql_log_error }}
 #general_log_file   = /var/log/mysql/mysqld.log
 #general_log        = 1
-binlog_format		= {{ mysql_binlog_format }}
-log_error_verbosity = 1
+log_error_verbosity = {{ mysql_log_error_verbosity }}
 
 # ** Slow queries
 # log_slow_queries   = /var/log/mysql/mysql-slow.log
@@ -54,8 +52,16 @@ log_error_verbosity = 1
 
 # The following can be used as easy to replay backup logs or for replication.
 expire_logs_days    = {{ mysql_expire_logs_days }}
+
+# ** Binlog
+{% if mysql_skip_log_bin %}
+skip-log-bin
+{% else %}
+binlog_format		= {{ mysql_binlog_format }}
 max_binlog_size     = {{ mysql_max_binlog_size }}
-max_binlog_files	= {{ mysql_max_binlog_files }}
+max_binlog_files	= {{ mysql_max_binlog_files }}	
+sync_binlog			= {{ mysql_sync_binlog }}
+{% endif %}
 
 # ** InnoDB
 innodb_flush_log_at_trx_commit = {{ mysql_innodb_flush_log_at_trx_commit }}
