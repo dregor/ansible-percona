@@ -17,6 +17,7 @@ mysql_server_id: 1
 mysql_log_error_verbosity: 1
 mysql_log_error: "/var/log/mysqld.log"
 mysql_expire_logs_days: 3
+mysql_sync_binlog: 0
 mysql_max_binlog_size: "1G"
 mysql_max_binlog_files: 12
 mysql_binlog_format: "ROW"
@@ -40,6 +41,8 @@ mysql_isamchk_key_buffer: "16M"
 mysql_max_connect_errors: "100"
 mysql_wait_timeout: "300"
 
+# Replication
+mysql_slave_compressed_protocol: 0
 
 # InnoDB tuning
 mysql_innodb_file_per_table: "1"
@@ -50,8 +53,6 @@ mysql_innodb_log_buffer_size: "1M"
 mysql_innodb_log_file_size: "5M"
 mysql_innodb_buffer_pool_dump: true
 mysql_innodb_buffer_pool_instances: "2"
-
-mysql_character_set_client_handshake: "FALSE"
 
 replicate_do: []
 mysql_databases: []
