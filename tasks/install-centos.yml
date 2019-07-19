@@ -14,7 +14,6 @@
   with_items:
     - "Percona-Server-server-{{mysql_version_major}}{{mysql_version_minor}}"
     - "Percona-Server-client-{{mysql_version_major}}{{mysql_version_minor}}"
-    - "Percona-Server-devel-{{mysql_version_major}}{{mysql_version_minor}}"
   when: not mysql_cluster
 
 - name: "Install percona mysql cluster server"

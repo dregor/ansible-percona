@@ -39,15 +39,23 @@ query_cache_type		= {{ mysql_query_cache_type }}
 query_cache_limit       = {{ mysql_query_cache_limit }}
 query_cache_size        = {{ mysql_query_cache_size }}
 
-# ** Logging and Replication
-{% if mysql_slave_skip_errors: %}
-slave-skip-errors	= {{ mysql_slave_skip_errors }}
-{% endif %}
-slave_compressed_protocol 	= {{ mysql_slave_compressed_protocol }}
+# ** Logging
 log_error 					= {{ mysql_log_error }}
 #general_log_file   		= /var/log/mysql/mysqld.log
 #general_log        		= 1
 log_error_verbosity 		= {{ mysql_log_error_verbosity }}
+
+
+# ** Replication 
+{% if mysql_slave_parallel_workers > 1 %}
+slave_parallel_workers = {{ mysql_slave_parallel_workers }}
+slave-parallel-type = LOGICAL_CLOCK
+{% endif %}
+{% if mysql_slave_skip_errors: %}
+slave-skip-errors	= {{ mysql_slave_skip_errors }}
+{% endif %}
+slave_compressed_protocol 	= {{ mysql_slave_compressed_protocol }}
+
 
 # ** Slow queries
 # log_slow_queries   = /var/log/mysql/mysql-slow.log
@@ -94,6 +102,7 @@ validate_password_length=0
 validate_password_mixed_case_count=0
 validate_password_number_count=0
 {% endif %}
+
 
 # ** Replicate do
 {% for db in replicate_do: -%}
