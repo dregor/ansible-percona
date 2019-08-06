@@ -69,6 +69,7 @@ expire_logs_days    = {{ mysql_expire_logs_days }}
 {% if mysql_skip_log_bin %}
 skip-log-bin
 {% else %}
+binlog_cache_size	= {{ mysql_binlog_cache_size }}
 binlog_format		= {{ mysql_binlog_format }}
 max_binlog_size     = {{ mysql_max_binlog_size }}
 max_binlog_files	= {{ mysql_max_binlog_files }}	
@@ -129,8 +130,13 @@ wsrep_retry_autocommit  = "{{ mysql_wsrep_retry_autocommit }}"
 
 
 [sst]
-progress					= "/var/lib/mysql/xtrabackup-progress.log"
+compressor 					= 'pigz -p 8'
+decompressor				= 'pigz -dp 8'
+#rebuild						= ON
+#compact						= ON
+#progress					= "/var/lib/mysql/xtrabackup-progress.log"
 inno-backup-opts		 	= "--host='127.0.0.1'"
+inno-apply-opts				= "--use-memory=40G"
 sst-syslog					= -1
 # wsrep_log_conflicts  		= ON
 # wsrep_provider_options 	= "cert.log_conflicts=ON"
@@ -156,5 +162,3 @@ log-error=/var/log/mysqld.log
 pid-file=/var/run/mysqld/mysqld.pid
 nice        = 0
 open-files-limit = 16384
-
-
