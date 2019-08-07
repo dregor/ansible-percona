@@ -47,6 +47,10 @@ log_error_verbosity 		= {{ mysql_log_error_verbosity }}
 
 
 # ** Replication 
+{% if mysql_gtid_mode: %}
+gtid_mode                       = {{ mysql_gtid_mode }}
+enforce_gtid_consistency        = {{ mysql_gtid_mode }}
+{% endif %}
 {% if mysql_slave_parallel_workers > 1 %}
 slave_parallel_workers = {{ mysql_slave_parallel_workers }}
 slave-parallel-type = LOGICAL_CLOCK
@@ -74,6 +78,7 @@ binlog_format		= {{ mysql_binlog_format }}
 max_binlog_size     = {{ mysql_max_binlog_size }}
 max_binlog_files	= {{ mysql_max_binlog_files }}	
 sync_binlog			= {{ mysql_sync_binlog }}
+log_slave_updates   = {{ mysql_log_slave_updates }}
 {% endif %}
 
 # ** InnoDB
