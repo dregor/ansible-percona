@@ -67,9 +67,9 @@ mysql_users: []
 mysql_cluster: false
 mysql_type: "mysql"
 mysql_nodes_group: "mysqlCluster"
-mysql_cluster_name: "{{ mysql_nodes_group }}"
-mysql_cluster_address: "{{ groups[ mysql_nodes_group ] | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(',') }}"
-mysql_master_node: "{{ hostvars[ groups[ mysql_nodes_group ][0] ].ansible_default_ipv4.address }}"
+mysql_cluster_name: "{{ mysql_nodes_group | default('')}}"
+mysql_cluster_address: "{{ groups[ mysql_nodes_group ] | default({}) | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(',') }}"
+mysql_master_node: "{{ hostvars[ groups[ mysql_nodes_group ][0] ].ansible_default_ipv4.address | default('127.0.0.1')}}"
 mysql_sst_user: "sstuser"
 mysql_sst_password: "sstpassword"
 mysql_gcs_fc_limit: 32
