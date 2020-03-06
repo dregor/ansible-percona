@@ -45,6 +45,8 @@ log_error 					= {{ mysql_log_error }}
 #general_log        		= 1
 log_error_verbosity 		= {{ mysql_log_error_verbosity }}
 
+log_bin						= {{ mysql_log_bin }}
+binlog_space_limit			= {{ mysql_binlog_space_limit }}
 
 # ** Replication 
 {% if mysql_gtid_mode: %}
@@ -52,9 +54,12 @@ gtid_mode                       = {{ mysql_gtid_mode }}
 enforce_gtid_consistency        = {{ mysql_gtid_mode }}
 {% endif %}
 {% if mysql_slave_parallel_workers > 1 %}
-slave_parallel_workers = {{ mysql_slave_parallel_workers }}
-slave-parallel-type = LOGICAL_CLOCK
-slave_preserve_commit_order = ON
+slave_parallel_workers 			= {{ mysql_slave_parallel_workers }}
+slave-parallel-type 			= LOGICAL_CLOCK
+binlog_order_commits		 	= {{ mysql_binlog_order_commits }}
+slave_preserve_commit_order		= {{ mysql_binlog_order_commits }}
+binlog_group_commit_sync_delay  = {{ mysql_binlog_group_commit_sync_delay }}
+
 {% endif %}
 {% if mysql_slave_skip_errors: %}
 slave-skip-errors	= {{ mysql_slave_skip_errors }}
@@ -74,6 +79,9 @@ expire_logs_days    = {{ mysql_expire_logs_days }}
 {% if mysql_skip_log_bin %}
 skip-log-bin
 {% else %}
+{% if mysql_binlog_do_db %}
+binlog-do-db		= {{ mysql_binlog_do_db }}
+{% endif %}
 binlog_cache_size	= {{ mysql_binlog_cache_size }}
 binlog_format		= {{ mysql_binlog_format }}
 max_binlog_size     = {{ mysql_max_binlog_size }}
@@ -101,15 +109,6 @@ innodb_page_cleaners			= {{ mysql_innodb_buffer_pool_instances }}
 character_set_server = {{ mysql_character_set_server }}
 collation_server = {{ mysql_collation_server }}
 skip-character-set-client-handshake
-
-{% if not mysql_cluster: %}
-validate_password_policy=LOW
-validate_password_special_char_count=0
-validate_password_length=0
-validate_password_mixed_case_count=0
-validate_password_number_count=0
-{% endif %}
-
 
 # ** Replicate do
 {% for db in replicate_do: -%}

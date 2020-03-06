@@ -47,7 +47,11 @@ mysql_slave_compressed_protocol: 1
 mysql_slave_skip_errors: false
 mysql_slave_parallel_workers: 1
 mysql_gtid_mode: 1
+mysql_log_bin: '{{ inventory_hostname_short }}_bin'
+mysql_binlog_space_limit: 2G
 mysql_log_slave_updates: 0
+mysql_binlog_order_commits: 1
+mysql_binlog_group_commit_sync_delay: 200
 
 # InnoDB tuning
 mysql_innodb_file_per_table: "1"
