@@ -8,28 +8,17 @@
     - "{{ ansible_distribution }}.yml"
     - "{{ ansible_os_family }}.yml"
 
-- include: install-arbitrator.yml
-  tags: install
-  when: 
-    - mysql_type == "arbitrator"
-    - mysql_cluster
-
 - include: install-centos.yml
   tags: install
-  when: mysql_type == "mysql"
 
 - include: secure.yml
   tags: secure
-  when: mysql_type == "mysql"
 
 - include: configure-centos.yml
   tags: configure
-  when: mysql_type == "mysql"
 
 - include: databases.yml
   tags: databases
-  when: mysql_type == "mysql"
 
 - include: users.yml
-  tags: users
-  when: mysql_type == "mysql"
+  tags: mysql_users

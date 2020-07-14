@@ -1,5 +1,7 @@
----
-
+- name: "uninstall plugin validate_password;"
+  shell: mysql -e "uninstall plugin validate_password;"
+  ignore_errors: yes 
+  
 - name: "Make sure the MySQL users are present"
   mysql_user:
     name: "{{ item.name }}"
@@ -8,3 +10,8 @@
     state: "present"
     host: "{{ item.host | default('localhost') }}"
   with_items: "{{ mysql_users }}"
+
+- name: 'auth_socket users'
+  shell: mysql -e "ALTER USER '{{item.name}}'@'{{item.host}}' IDENTIFIED WITH auth_socket;"
+  with_items: '{{ mysql_users | selectattr("auth_socket", "defined") | list }}'
+  when: "'auth_socket.so' in mysql_plugin_load_add"

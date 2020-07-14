@@ -1,11 +1,6 @@
-- name: repository installation
-  yum_repository:
-    file: "{{ mysql_repo_filename }}" 
-    name: "{{ mysql_repo_name }}"
-    description: "{{ mysql_repo_desc }}"
-    baseurl: "{{ mysql_repo_baseurl }}"
-    gpgkey: "{{ mysql_repo_gpgkey }}"
-    gpgcheck: "{{ mysql_repo_gpgcheck }}"
+- name: install repo
+  yum:
+    name: '{{ mysql_percona_repo_rpm_url }}'
 
 - name: "Install percona database server"
   yum:
@@ -14,13 +9,6 @@
   with_items:
     - "Percona-Server-server-{{mysql_version_major}}{{mysql_version_minor}}"
     - "Percona-Server-client-{{mysql_version_major}}{{mysql_version_minor}}"
-  when: not mysql_cluster
-
-- name: "Install percona mysql cluster server"
-  yum:
-    name: "Percona-XtraDB-Cluster-{{mysql_version_major}}{{mysql_version_minor}}"
-    state: present
-  when: mysql_cluster
 
 - name: "Install percona additional packages"
   yum:

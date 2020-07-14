@@ -1,3 +1,4 @@
+mysql_percona_repo_rpm_url: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
 mysql_version_major: "5"
 mysql_version_minor: "7"
 
@@ -12,6 +13,8 @@ mysql_language: "/usr/share/mysql/"
 mysql_datadir: "/var/lib/mysql"
 mysql_socket: "/var/lib/mysql/mysql.sock"
 mysql_server_id: 1
+mysql_local_infile: 0
+mysql_innodb_deadlock_detect: 1
 
 # Logs
 mysql_log_error_verbosity: 1
@@ -62,21 +65,12 @@ mysql_innodb_log_buffer_size: "1M"
 mysql_innodb_log_file_size: "5M"
 mysql_innodb_buffer_pool_dump: true
 mysql_innodb_buffer_pool_instances: "2"
+mysql_innodb_strict_mode: 1
 
 replicate_do: []
 mysql_databases: []
 mysql_users: []
+mysql_binlog_do_db: []
+replicate_ignore: []
 
-# Cluster settings
-mysql_cluster: false
-mysql_type: "mysql"
-mysql_nodes_group: "mysqlCluster"
-mysql_cluster_name: "{{ mysql_nodes_group | default('')}}"
-mysql_cluster_address: "{{ groups[ mysql_nodes_group ] | default({}) | map('extract', hostvars, ['ansible_default_ipv4', 'address']) | join(',') }}"
-mysql_master_node: "{{ hostvars[ groups[ mysql_nodes_group ][0] ].ansible_default_ipv4.address | default('127.0.0.1')}}"
-mysql_sst_user: "sstuser"
-mysql_sst_password: "sstpassword"
-mysql_gcs_fc_limit: 32
-mysql_wsrep_slave_threads: 8
-mysql_wsrep_retry_autocommit: 2
-mysql_gcache_size: "2G"
+mysql_plugin_load_add: []

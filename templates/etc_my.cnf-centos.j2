@@ -13,6 +13,12 @@ skip-external-locking
 {% endif %}
 server-id	= {{ mysql_server_id }}
 sql-mode=""
+local_infile = {{ mysql_local_infile }}
+innodb_deadlock_detect	= {{ mysql_innodb_deadlock_detect }}
+{% if mysql_skip_log_bin %}
+skip_log_bin = 1
+{% endif %}
+
 
 user        = mysql
 socket      = {{ mysql_socket }}
@@ -35,9 +41,9 @@ max_connect_errors		= {{ mysql_max_connect_errors }}
 wait_timeout 			= {{ mysql_wait_timeout }}
 
 # ** Query Cache Configuration
-query_cache_type		= {{ mysql_query_cache_type }}
-query_cache_limit       = {{ mysql_query_cache_limit }}
-query_cache_size        = {{ mysql_query_cache_size }}
+# query_cache_type		= {{ mysql_query_cache_type }}
+# query_cache_limit       = {{ mysql_query_cache_limit }}
+# query_cache_size        = {{ mysql_query_cache_size }}
 
 # ** Logging
 log_error 					= {{ mysql_log_error }}
@@ -49,10 +55,13 @@ log_bin						= {{ mysql_log_bin }}
 binlog_space_limit			= {{ mysql_binlog_space_limit }}
 
 # ** Replication 
+master_info_repository 			= TABLE
+relay_log_info_repository 		= TABLE
 {% if mysql_gtid_mode: %}
-gtid_mode                       = {{ mysql_gtid_mode }}
-enforce_gtid_consistency        = {{ mysql_gtid_mode }}
+gtid_mode                       = ON
+enforce_gtid_consistency        = ON
 {% endif %}
+
 {% if mysql_slave_parallel_workers > 1 %}
 slave_parallel_workers 			= {{ mysql_slave_parallel_workers }}
 slave-parallel-type 			= LOGICAL_CLOCK
@@ -76,6 +85,8 @@ slave_compressed_protocol 	= {{ mysql_slave_compressed_protocol }}
 expire_logs_days    = {{ mysql_expire_logs_days }}
 
 # ** Binlog
+binlog_order_commits		 	= {{ mysql_binlog_order_commits }}
+binlog_group_commit_sync_delay  = {{ mysql_binlog_group_commit_sync_delay }}
 {% if mysql_skip_log_bin %}
 skip-log-bin
 {% else %}
@@ -118,34 +129,18 @@ replicate-do-table={{ db.name }}.{{ table }}
 	{% endfor -%}
 {%- endfor -%}
 
+# ** Replicate ignore
+{% for db in replicate_ignore %}
+{% for table in db.tables %}
+	replicate-ignore-table={{ db.name }}.{{ table }}
+{% endfor %}
+{% endfor %}
 
-# ** WSREP options
-{% if mysql_cluster: %}
-wsrep_on				= ON
-wsrep_provider			= "{{ mysql_wsrep_provider }}"
-wsrep_cluster_name		= "{{ mysql_cluster_name }}"
-wsrep_cluster_address	= "gcomm://{{ mysql_cluster_address }}"
-wsrep_sst_auth			= {{ mysql_sst_user }}:{{ mysql_sst_password }}
-wsrep_sst_method		= xtrabackup-v2
-wsrep_provider_options	= "gcache.size = {{ mysql_gcache_size }};gcache.recover = yes;gcs.fc_master_slave = YES;gcs.fc_limit={{ mysql_gcs_fc_limit }}"
-wsrep_slave_threads		= {{ mysql_wsrep_slave_threads }}
-wsrep_node_address		= "{{ ansible_default_ipv4.address }}"
-wsrep_node_name			= "{{ ansible_hostname }}"
-wsrep_retry_autocommit  = "{{ mysql_wsrep_retry_autocommit }}"
-
-
-[sst]
-compressor 					= 'pigz -p 8'
-decompressor				= 'pigz -dp 8'
-#rebuild						= ON
-#compact						= ON
-#progress					= "/var/lib/mysql/xtrabackup-progress.log"
-inno-backup-opts		 	= "--host='127.0.0.1'"
-inno-apply-opts				= "--use-memory=40G"
-sst-syslog					= -1
-# wsrep_log_conflicts  		= ON
-# wsrep_provider_options 	= "cert.log_conflicts=ON"
-# wsrep_debug				= ON
+{% if mysql_plugin_load_add is defined and mysql_plugin_load_add is iterable %}
+# ** Additional plugins
+{% for plugin in mysql_plugin_load_add %}
+plugin-load-add={{plugin}}
+{% endfor %}
 {% endif %}
 
 [mysqldump]

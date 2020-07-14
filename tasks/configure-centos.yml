@@ -1,16 +1,3 @@
-- name: Create SST user
-  mysql_user:
-    login_user: root
-    login_password: "{{ mysql_root_password }}"
-    user: "{{ mysql_sst_user }}"
-    password: "{{ mysql_sst_password }}"
-    host: "%"
-    priv: "*.*:grant,reload,lock tables,process,replication client"
-  when: mysql_cluster
-  with_items:
-    - "%"
-    - "127.0.0.1"
-
 - name: "Stop mysql"
   service: "name=mysql state=stopped"
 
@@ -23,20 +10,3 @@
 
 - name: Start mysql
   service: "name=mysql state=started"
-  when: not mysql_cluster
-
-- name: Start the master node
-  service:
-    name: "mysql@bootstrap.service"
-    state: started
-  when: 
-    - mysql_cluster
-    - mysql_master_node == ansible_default_ipv4.address
-
-- name: Start other nodes
-  service:
-    name: "mysql.service"
-    state: started
-  when: 
-    - mysql_cluster
-    - mysql_master_node != ansible_default_ipv4.address
