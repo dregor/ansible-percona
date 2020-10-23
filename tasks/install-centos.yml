@@ -1,5 +1,6 @@
 - name: install repo
   yum:
+    disable_gpg_check: yes
     name: '{{ mysql_percona_repo_rpm_url }}'
 
 - name: "Install percona database server"
