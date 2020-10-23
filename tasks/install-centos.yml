@@ -3,6 +3,16 @@
     disable_gpg_check: yes
     name: '{{ mysql_percona_repo_rpm_url }}'
 
+- name: disable mysql module dnf
+  shell: "dnf module disable mysql"
+  when: ansible_distribution_major_version == "8"
+
+- name: enable 57 percna
+  shell: "percona-release setup {{item}}"
+  with_items:
+    - ps57
+    - tools
+  when: ansible_distribution_major_version == "8"
 - name: "Install percona database server"
   yum:
     name: "{{ item }}"
@@ -18,7 +28,16 @@
   with_items:
     - "percona-toolkit"
     - "percona-xtrabackup-24"
-    - "MySQL-python"
+
+- name: "install mysql python module"
+  yum:
+    name: "MySQL-python"
+  when: ansible_distribution_major_version == '7'
+
+- name: "install mysql python module"
+  yum:
+    name: "python3-mysql"
+  when: ansible_distribution_major_version == '8'
 
 - name: "Adjust permissions of datadir"
   file:
