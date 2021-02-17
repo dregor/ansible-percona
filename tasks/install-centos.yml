@@ -4,15 +4,16 @@
     name: '{{ mysql_percona_repo_rpm_url }}'
 
 - name: disable mysql module dnf
-  shell: "dnf module disable mysql"
+  shell: "dnf module disable mysql -y"
   when: ansible_distribution_major_version == "8"
 
 - name: enable 57 percna
-  shell: "percona-release setup {{item}}"
+  shell: "percona-release enable {{item}}"
   with_items:
-    - ps57
+    - ps-57
     - tools
   when: ansible_distribution_major_version == "8"
+
 - name: "Install percona database server"
   yum:
     name: "{{ item }}"
